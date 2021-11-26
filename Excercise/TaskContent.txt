@@ -1,0 +1,14 @@
+Tresc zadania:
+
+OK. Stwórz nowy projekt o nazwie TripEvaluator.
+OK. W projekcie zaimplementuj trzy modele bazowanowe - Trip, Review oraz User.
+OK. Trip ma posiadać id, tytul, destynacje, listę review + JAKIEŚ WŁASNE POLA
+OK. Review ma posiadać id, treść, autora + JAKIEŚ WŁASNE POLA
+OK. Autor ma posiadać id, imie  + JAKIEŚ WŁASNE POLA
+OK. Zaimplementuj pełną logikę od controllera, aż po repository wraz z obsługą bazy danych H2
+Dla modelu TRIP do zaimplementowania są metody:
+* save - zapisuje nową wycieczkę, która ma listę review. Każde review ma autora
+* addReview - dodaje review (które ma autora) do istniejącej wycieczki
+* findAll - zwraca wszystkie wycieczki
+* findById - parametr ID ma być przyjęty z adresu i przekazany dalej
+* delete - parametr ID ma być przyjęty z adresu i przekazany dalej
