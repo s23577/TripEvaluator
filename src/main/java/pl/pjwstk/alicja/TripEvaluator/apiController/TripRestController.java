@@ -2,75 +2,46 @@ package pl.pjwstk.alicja.TripEvaluator.apiController;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.pjwstk.alicja.TripEvaluator.models.Review;
 import pl.pjwstk.alicja.TripEvaluator.models.Trip;
-import pl.pjwstk.alicja.TripEvaluator.service.ReviewService;
 import pl.pjwstk.alicja.TripEvaluator.service.TripService;
-
-import java.net.URI;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/trip")
 public class TripRestController {
+    private final TripService tripService;
 
-    //wstrzykujemy zaleznosc - pole i konstruktor
-    private TripService tripService;
     public TripRestController(TripService tripService){
         this.tripService = tripService;
     }
-    private ReviewService reviewService;
-    public TripRestController(ReviewService reviewService) {this.reviewService = reviewService; }
-    @GetMapping("/favourite")
-    public ResponseEntity<Trip> example1(){
-        return ResponseEntity.ok(tripService.buildExampleOfTrip());
-    }
-    @GetMapping("/findAll")
-    public ResponseEntity<List<Trip>> getAll(){
-        return ResponseEntity.ok(tripService.listOfTrips());
-    }
+    //save - zapisuje nową wycieczkę, która ma listę review. Każde review ma autora
+    @RequestMapping("/addTrip")
+    public ResponseEntity<Trip> addTrip(){
+        Trip trip = tripService.createTrip();
+        return ResponseEntity.ok(trip);
 
-    //http://localhost:8080/getTripById/2   <- 2 to id
-    @GetMapping("/findTripId")
+    }
+    //addReview - dodaje review (które ma autora) do istniejącej wycieczki
+    @RequestMapping("/addReview")
+    public ResponseEntity addReview() {
+        return ResponseEntity.ok(tripService.addReview(1));
+    }
+    //findAll - zwraca wszystkie wycieczki
+    @RequestMapping("/getAllTrips")
+    public ResponseEntity<List<Trip>> getAllTrips(){
+        return ResponseEntity.ok(tripService.getAllTrips());
+    }
+    //findById - parametr ID ma być przyjęty z adresu i przekazany dalej
+    //http://localhost:8080/findTripById/2   <- 2 to id
+    @GetMapping("/findTripById/{id}")
     public ResponseEntity getTripById(@PathVariable Integer id) {
         return ResponseEntity.ok(tripService.getTripById(id));
     }
-    //trip ma listReview, a każde review ma autora
-    @PostMapping(path = "/save")
-    public ResponseEntity addNewTrip(@RequestBody Trip trip){
-        tripService.save(trip);
-
-        //ponizszy fragment kodu pozwala na wyszukanie pozniej trip po id
-        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/trip/findTripId")
-                .path("/{id}")
-                .buildAndExpand(trip.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
-    }
-    //review majace autora
-    @PostMapping(path = "/addReview")
-    public ResponseEntity addNewReview(@RequestBody Review review){
-        //sprawdzam, czy istnieje autorUser dla review
-        Optional<Integer> authorUserId = Optional.ofNullable(review.getAuthorUser().getId());
-        if(authorUserId.isPresent()){
-           reviewService.addReview(review);
-        } else {
-            return ResponseEntity.ok("Author doesn't exist, try again!!!");
-        }
-        return ResponseEntity.ok("The trip was successfully saved to database.");
-    }
-    //usuwanie trip po id
-    @DeleteMapping("/deleteTrip/{id}")
-    public ResponseEntity<?> deleteTripById(@PathVariable Integer id){
-        tripService.deleteTrip(id);
-        return ResponseEntity.noContent().build();
-    }
-    //usuwanie rewiev po id
-    @DeleteMapping("/DeleteReview/{id}")
-    public ResponseEntity<?> deleteReviewById(@PathVariable Integer id){
-        reviewService.deleteReview(id);
+    //delete - parametr ID ma być przyjęty z adresu i przekazany dalej
+    @GetMapping("/deleteTripById/{id}")
+    public ResponseEntity deleteTripById(@PathVariable Integer id){
+        tripService.deleteTripById(id);
         return ResponseEntity.noContent().build();
     }
 }

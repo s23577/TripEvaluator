@@ -1,58 +1,43 @@
 package pl.pjwstk.alicja.TripEvaluator.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import pl.pjwstk.alicja.TripEvaluator.models.AuthorUser;
 import pl.pjwstk.alicja.TripEvaluator.models.MainTypeOfConveyance;
 import pl.pjwstk.alicja.TripEvaluator.models.Review;
 import pl.pjwstk.alicja.TripEvaluator.models.Trip;
-import pl.pjwstk.alicja.TripEvaluator.repository.ReviewRepository;
 import pl.pjwstk.alicja.TripEvaluator.repository.TripRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
-//todo: save - zapisuje nowa wycieczke, ktora ma list review, kazde review ma autora
-//todo: addReview - dodaje rewiec (ktore ma autora) do istniejacej wycieczki
-//todo: findAll - zwraca wszystkie wycieczki
-//todo: findId - parametr ID ma byc przyjedty z adresu i przekazany dalej
-//todo: delete - parametr ID ma byc przyjety z adresu i przekazany dalej
-
-
-@Service //bez tej adnotacji TripService nie jest nigdy uzyte, teraz jest uzywana
-public class TripService { //klasa wspomagajaca operacje na bazie danych
-
-    //wstrzykniecie repozytorium do serwisu poprzez konstruktor serwisu
+import org.springframework.stereotype.Service;
+@Service
+public class TripService {
     private final TripRepository tripRepository;
-    @Autowired
-    public TripService(TripRepository tripRepository) {
+    public TripService(TripRepository tripRepository){
         this.tripRepository = tripRepository;
     }
-
-    //ponizej beda metody jakie ma wykonywac...
-    //przykladowa metoda
-    //tu metoda na generowanie kolejnych id dla tych samych trip
-    public Trip buildExampleOfTrip(){
-        AuthorUser authorUser1 = new AuthorUser(null, "Alicja", 3, true);
-        Review review1 = new Review(null, "too long trip", authorUser1, 3);
-        List<Review> listOfComponents = List.of(review1);
-
-        Trip trip = new Trip(null, "Malaga", "Malaga", 7, 5000, MainTypeOfConveyance.AIRPLANE, listOfComponents);
+    public Trip createTrip(){
+        AuthorUser author1 = new AuthorUser(null, "JEDREK",16, true);
+        List<Review> reviews = new ArrayList<>();
+        Review review = new Review(null, "mushrooms", author1, 1);
+        reviews.add(review);
+        Trip trip1 = new Trip(null, "Sandplace", "SAHARA", 50, 500, MainTypeOfConveyance.BIKE, reviews);
+        return tripRepository.save(trip1);
+    }
+    public Trip addReview(Integer tripId){
+        Trip trip = this.tripRepository.getById(tripId);
+        AuthorUser authorUser = new AuthorUser(null, "MAX", 3, true);
+        Review review = new Review(null, "best trip", authorUser, 5);
+        trip.addToReviewList(review);
         return tripRepository.save(trip);
-    }
-    //save
-    public void save(Trip trip){
-        tripRepository.save(trip);
-    }
-    //findAll
-    public List<Trip> listOfTrips(){
+        }
+    public List<Trip> getAllTrips(){
         return tripRepository.findAll();
     }
-    //findTripId
     public Trip getTripById(Integer id){
-        return tripRepository.getById(id);
+        return tripRepository.findById(id).orElseGet(() -> null); //jesli nie znajdzie to null
     }
-    //delete trip
-    public void deleteTrip(Integer id){
+    public void deleteTripById(Integer id){
         tripRepository.deleteById(id);
     }
 }
