@@ -82,7 +82,7 @@ public class Trip {
     }
 
     public void addToReviewList(Review review) {
-        reviewList.add(review);
+        this.reviewList.add(review);
     }
 
     @Override

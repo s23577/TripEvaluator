@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class TripEvaluatorApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void contextLoads() { //test testuje czy Spring się ładuje, czy aplikacja się uruchamia
 	}
-
+	//striktura tripService i cos musi byc identyczna
 }
